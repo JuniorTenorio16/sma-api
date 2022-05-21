@@ -82,8 +82,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'sma_db',
-        'HOST': '127.0.0.1',
-        'PORT': 27017
+        'CLIENT': {
+            "host": 'mongodb',
+            "port": 27017,
+        }
     }
 }
 
