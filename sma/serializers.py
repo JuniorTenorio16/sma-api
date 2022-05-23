@@ -8,7 +8,7 @@ from sma.models import Sma
 class SmaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sma
-        fields = ('pair', 'timestamp', 'sma_20', 'sma_50', 'sma_200')
+        fields = ('pair', 'timestamp', 'close', 'sma_20', 'sma_50', 'sma_200')
 
 
 class CandlesSerializer(serializers.Serializer):
