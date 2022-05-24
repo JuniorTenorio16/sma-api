@@ -12,9 +12,9 @@ class SmaSerializer(serializers.ModelSerializer):
 
 
 class CandlesSerializer(serializers.Serializer):
-    close = serializers.DecimalField(max_digits=19, decimal_places=10)
-    high = serializers.DecimalField(max_digits=19, decimal_places=10)
-    low = serializers.DecimalField(max_digits=19, decimal_places=10)
-    open = serializers.DecimalField(max_digits=19, decimal_places=10)
+    close = serializers.FloatField()
+    high = serializers.FloatField()
+    low = serializers.FloatField()
+    open = serializers.FloatField()
     timestamp = serializers.IntegerField()
-    volume = serializers.DecimalField(max_digits=19, decimal_places=10)
+    volume = serializers.FloatField()
