@@ -12,10 +12,24 @@ services:
   web:
     build: .
     restart: always
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: bash -c "
+        python3 manage.py shell < seeds.py &&
+        python3 manage.py runserver 0.0.0.0:8000
+      "
     volumes:
       - .:/code
     ports:
       - 8000:8000
     links:
+      - mongodb
+    depends_on:
+      - migration
+  
+  migration:
+    build: 
+      context: .
+    command: python manage.py migrate 
+    volumes:
+      - .:/code
+    depends_on:
       - mongodb
