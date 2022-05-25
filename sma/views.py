@@ -32,11 +32,18 @@ def validateRange(range):
     return True
 
 
+def buildBodyResponse(data, range):
+    body = []
+    for sma in data:
+        body.append({
+            'timestamp': sma.get('timestamp'),
+            'mms': sma.get('sma_%s'%range)
+        })
+    return body
 
 @csrf_exempt
 def smaApi(request, pair):
     if request.method=='GET':
-        print(pair)
         sma_body = JSONParser().parse(request)
         if not validateDateFromTo(sma_body.get('from'), sma_body.get('to')):
             JsonResponse({
@@ -48,6 +55,7 @@ def smaApi(request, pair):
             try:
                 sma = Sma.objects.filter(timestamp__range=(sma_body.get('from'), sma_body.get('to')))
                 sma_serializer = SmaSerializer(sma, many=True)
+                sma_body_resp = buildBodyResponse(sma_serializer.data, sma_body.get('range'))
             except ValidationError as err:
                 raise serializers.ValidationError('Error request mongo: %s'%err)
         else:
@@ -56,5 +64,5 @@ def smaApi(request, pair):
                     'message': 'Range value is invalid'
                 }, 
                 status=422)
-    return JsonResponse(sma_serializer, safe=False)
+    return JsonResponse(sma_body_resp, safe=False)
     
