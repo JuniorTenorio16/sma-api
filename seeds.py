@@ -10,12 +10,6 @@ import sys
 from sma.models import Sma
 from sma.serializers import SmaSerializer, RecordMissingSerializer
 
-presentday = datetime.now()
-yesterday = presentday - timedelta(1)
-lastyear = yesterday - timedelta(365) 
-
-print(yesterday)
-print(lastyear)
 
 
 def getIntervalDate():
@@ -46,7 +40,6 @@ def insertRecordMissing(data):
 
 def checkResponse(data):
     count = 0
-    data.pop(53)
     if len(data) < 365:
         for sma in data:
             present = datetime.fromtimestamp(sma.get('timestamp'))
@@ -94,6 +87,7 @@ def insertCandles(data):
         except Exception as e:
             print("Failed save new record : %s"%e)
 
+
 def getCandles():
     yesterday, lastyear = getIntervalDate()
     url = "https://mobile.mercadobitcoin.com.br/v4/BRLBTC/candle?from=%s&to=%s&precision=1d"%(lastyear, yesterday)
@@ -105,7 +99,7 @@ def getCandles():
         print('Error request url(%s) : %s'%(url, err))
         raise 
     candles = data.get('candles')
-    
+    insertCandles(candles)
     checkResponse(candles)
     return data
 
