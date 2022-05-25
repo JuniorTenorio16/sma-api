@@ -28,7 +28,7 @@ services:
   migration:
     build: 
       context: .
-    command: python manage.py migrate 
+    command: python3 manage.py migrate sma
     volumes:
       - .:/code
     depends_on:
