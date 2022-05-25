@@ -18,8 +18,8 @@ def validateDateFromTo(from_date, to_date):
 
     if (datetime.now().date()-to_date.date()).days < 1:
         return False
-    
-    if diff_date < 1 and diff_date > 365:
+
+    if diff_date < 1 or diff_date > 365:
         return False
     
     return True
@@ -46,7 +46,7 @@ def smaApi(request, pair):
     if request.method=='GET':
         sma_body = JSONParser().parse(request)
         if not validateDateFromTo(sma_body.get('from'), sma_body.get('to')):
-            JsonResponse({
+            return JsonResponse({
                     'status': 'false', 
                     'message': 'Date format or values ​​is invalid'
                 }, 
