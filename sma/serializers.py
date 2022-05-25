@@ -2,7 +2,7 @@ from dataclasses import fields
 from pyexpat import model
 from sqlite3 import Timestamp
 from rest_framework import serializers
-from sma.models import Sma
+from sma.models import Sma, RecordMissing
 
 
 class SmaSerializer(serializers.ModelSerializer):
@@ -18,3 +18,9 @@ class CandlesSerializer(serializers.Serializer):
     open = serializers.FloatField()
     timestamp = serializers.IntegerField()
     volume = serializers.FloatField()
+
+
+class RecordMissingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecordMissing
+        fields = ('timestamp', 'pair', 'status')
