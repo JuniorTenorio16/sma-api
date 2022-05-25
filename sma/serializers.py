@@ -1,6 +1,4 @@
 from dataclasses import fields
-from pyexpat import model
-from sqlite3 import Timestamp
 from rest_framework import serializers
 from sma.models import Sma, RecordMissing
 
