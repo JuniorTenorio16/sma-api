@@ -8,7 +8,6 @@ from datetime import datetime
 
 from sma.models import Sma
 from sma.serializers import SmaSerializer
-# Create your views here.
 
 
 def validateDateFromTo(from_date, to_date):
@@ -53,7 +52,7 @@ def smaApi(request, pair):
                 status=422)
         if validateRange(sma_body.get('range')):
             try:
-                sma = Sma.objects.filter(timestamp__range=(sma_body.get('from'), sma_body.get('to')))
+                sma = Sma.objects.get(timestamp__range=(sma_body.get('from'), sma_body.get('to')))
                 sma_serializer = SmaSerializer(sma, many=True)
                 sma_body_resp = buildBodyResponse(sma_serializer.data, sma_body.get('range'))
             except ValidationError as err:
