@@ -56,7 +56,7 @@ def recordingMissing(request):
         if len(record_missing) is 0:
             return JsonResponse([], safe=False, status=200)
         record_missing_serializer = RecordMissingSerializer(record_missing, many=True)
-        return JsonResponse(record_missing_serializer, safe=False)
+        return JsonResponse(record_missing_serializer.data, safe=False)
     except Exception as err:
         return JsonResponse({
             'status': 'false', 
