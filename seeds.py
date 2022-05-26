@@ -89,6 +89,7 @@ def insertCandles(data, pair):
 
 def getCandles():
     yesterday, lastyear = getIntervalDate()
+    Sma.objects.all().delete()
     for coin in COINS:
         url = URL_MB%(coin, lastyear, yesterday)
         try:
