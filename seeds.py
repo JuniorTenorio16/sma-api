@@ -81,8 +81,7 @@ def insertCandles(data):
         try:
             sma_serializer = SmaSerializer(data=sma)
             if sma_serializer.is_valid(raise_exception=True):
-                print('x')
-                # sma_serializer.save()
+                sma_serializer.save()
         except Exception as e:
             print("Failed save new record : %s"%e)
 
