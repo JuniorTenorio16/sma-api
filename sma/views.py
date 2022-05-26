@@ -1,6 +1,4 @@
-from sqlite3 import Timestamp
 from django.forms import ValidationError
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
@@ -40,28 +38,45 @@ def buildBodyResponse(data, range):
         })
     return body
 
+
+def validateJsonRequest(data):
+    if "to" not in data:
+        return False
+    if "from" not in data:
+        return False
+    if "range" not in data:
+        return False
+    return True
+
+
 @csrf_exempt
 def smaApi(request, pair):
+    sma_body = JSONParser().parse(request)
+    if validateJsonRequest(sma_body) is False:
+        return JsonResponse({
+                    'status': 'false', 
+                    'message': 'Body request is invalid'
+                }, 
+                status=422)
     if request.method=='GET':
-        sma_body = JSONParser().parse(request)
         if not validateDateFromTo(sma_body.get('from'), sma_body.get('to')):
             return JsonResponse({
-                    'status': 'false', 
-                    'message': 'Date format or values ​​is invalid'
+                    'message': 'Either date format or values is invalid'
                 }, 
                 status=422)
         if validateRange(sma_body.get('range')):
             try:
-                sma = Sma.objects.get(timestamp__range=(sma_body.get('from'), sma_body.get('to')))
+                sma = Sma.objects.filter(timestamp__range=(sma_body.get('from'), sma_body.get('to')))
                 sma_serializer = SmaSerializer(sma, many=True)
                 sma_body_resp = buildBodyResponse(sma_serializer.data, sma_body.get('range'))
+                return JsonResponse(sma_body_resp, safe=False)
             except ValidationError as err:
-                raise serializers.ValidationError('Error request mongo: %s'%err)
+                return JsonResponse({
+                    'message': 'Error request mongo: %s'%err
+                    }, status=422)
         else:
-            JsonResponse({
+            return JsonResponse({
                     'status': 'false', 
                     'message': 'Range value is invalid'
                 }, 
                 status=422)
-    return JsonResponse(sma_body_resp, safe=False)
-    
