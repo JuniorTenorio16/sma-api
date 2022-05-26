@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 from datetime import datetime
+import json
 
 from sma.models import Sma
 from sma.serializers import SmaSerializer
@@ -51,7 +52,13 @@ def validateJsonRequest(data):
 
 @csrf_exempt
 def smaApi(request, pair):
-    sma_body = JSONParser().parse(request)
+    try:
+        sma_body = JSONParser().parse(request)  
+    except:
+        return JsonResponse({
+            'status': 'false', 
+            'message': 'Json is invalid'
+        })
     if validateJsonRequest(sma_body) is False:
         return JsonResponse({
                     'status': 'false', 
@@ -72,6 +79,7 @@ def smaApi(request, pair):
                 return JsonResponse(sma_body_resp, safe=False)
             except ValidationError as err:
                 return JsonResponse({
+                    'status': 'false', 
                     'message': 'Error request mongo: %s'%err
                     }, status=422)
         else:
