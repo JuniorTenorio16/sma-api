@@ -10,6 +10,7 @@ from sma.serializers import SmaSerializer, RecordMissingSerializer
 load_dotenv()
 
 URL_MB = os.getenv('URL_MB')
+COINS = json.loads(os.getenv('COINS'))
 
 def getIntervalDate():
     presentday = datetime.now()
@@ -62,13 +63,13 @@ def checkResponse(data):
 
 
 
-def insertCandles(data):
+def insertCandles(data, pair):
     bulk_sma = []
     for candle in data:
         try:
             bulk_sma.append(candle)
             sma = {
-                'pair': 'BRLBTC',
+                'pair': pair,
                 'timestamp': candle.get('timestamp'),
                 'close': candle.get('close'),
                 'sma_20': calcSma(bulk_sma, 20),
@@ -88,17 +89,18 @@ def insertCandles(data):
 
 def getCandles():
     yesterday, lastyear = getIntervalDate()
-    url = URL_MB%(lastyear, yesterday)
-    try:
-        http = httplib2.Http()
-        resp = http.request(url)
-        data = json.loads(resp[1])
-    except ValueError as err:
-        print('Error request url(%s) : %s'%(url, err))
-        raise 
-    candles = data.get('candles')
-    insertCandles(candles)
-    checkResponse(candles)
+    for coin in COINS:
+        url = URL_MB%(coin, lastyear, yesterday)
+        try:
+            http = httplib2.Http()
+            resp = http.request(url)
+            data = json.loads(resp[1])
+        except ValueError as err:
+            print('Error request url(%s) : %s'%(url, err))
+            raise 
+        candles = data.get('candles')
+        insertCandles(candles, coin)
+        checkResponse(candles)
     return data
 
 getCandles()
