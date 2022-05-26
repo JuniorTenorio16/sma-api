@@ -3,8 +3,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 
-from sma.models import Sma
-from sma.serializers import SmaSerializer
+from sma.models import Sma, RecordMissing
+from sma.serializers import SmaSerializer, RecordMissingSerializer
 from sma.utils import buildBodyResponse,\
      validateDateFromTo, validateJsonRequest, validateRange 
 
@@ -47,3 +47,18 @@ def smaApi(request, pair):
                     'message': 'Range value is invalid'
                 }, 
                 status=422)
+
+
+@csrf_exempt
+def recordingMissing(request):
+    try:
+        record_missing = RecordMissing.objects.all()
+        if len(record_missing) is 0:
+            return JsonResponse([], safe=False, status=200)
+        record_missing_serializer = RecordMissingSerializer(record_missing, many=True)
+        return JsonResponse(record_missing_serializer, safe=False)
+    except Exception as err:
+        return JsonResponse({
+            'status': 'false', 
+            'message': 'Error request mongo: %s'%err
+            }, status=422)
