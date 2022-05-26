@@ -1,16 +1,15 @@
-from asyncio import exceptions
-from http import client
-import imp
-from itertools import count
+from dotenv import load_dotenv
+import os
 import json
 from datetime import datetime, timedelta
 import httplib2
-import sys
 
 from sma.models import Sma
 from sma.serializers import SmaSerializer, RecordMissingSerializer
 
+load_dotenv()
 
+URL_MB = os.getenv('URL_MB')
 
 def getIntervalDate():
     presentday = datetime.now()
@@ -90,7 +89,7 @@ def insertCandles(data):
 
 def getCandles():
     yesterday, lastyear = getIntervalDate()
-    url = "https://mobile.mercadobitcoin.com.br/v4/BRLBTC/candle?from=%s&to=%s&precision=1d"%(lastyear, yesterday)
+    url = URL_MB%(lastyear, yesterday)
     try:
         http = httplib2.Http()
         resp = http.request(url)
