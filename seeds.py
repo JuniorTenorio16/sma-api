@@ -12,6 +12,7 @@ load_dotenv()
 URL_MB = os.getenv('URL_MB')
 COINS = json.loads(os.getenv('COINS'))
 
+
 def getIntervalDate():
     presentday = datetime.now()
     yesterday = presentday - timedelta(1)
@@ -38,7 +39,8 @@ def insertRecordMissing(data):
     except Exception as err:
         print("Failed save new record : %s"%err)
 
-def checkResponse(data):
+
+def checkResponse(data, pair):
     count = 0
     if len(data) < 365:
         for sma in data:
@@ -51,7 +53,7 @@ def checkResponse(data):
                     date_request = int(round((present + timedelta(day)).timestamp()))
                     missing = {
                         'timestamp': date_request,
-                        'pair': 'BRLBTC',
+                        'pair': pair,
                         'status': True
                     }
                     insertRecordMissing(missing)
@@ -60,7 +62,6 @@ def checkResponse(data):
             if count == len(data)-1:
                 break
     return True
-
 
 
 def insertCandles(data, pair):
@@ -101,7 +102,8 @@ def getCandles():
             raise 
         candles = data.get('candles')
         insertCandles(candles, coin)
-        checkResponse(candles)
+        checkResponse(candles, coin)
     return data
+
 
 getCandles()
